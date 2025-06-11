@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jashanpreet Kaur | Interactive Resume for Starbucks</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Starbucks Inspired (Green, White, Black, Cream) -->
+    <!-- Application Structure Plan: A clean, single-column, full-width layout inspired by Starbucks' brand website. A sticky top navigation bar provides easy access to all sections. Content is organized into distinct, spacious sections with a light, creamy background, creating a warm and inviting feel. This structure is designed to be approachable and professional, focusing on clear communication and a pleasant user experience, much like the Starbucks brand itself. -->
+    <!-- Visualization & Content Choices: 
+        - Summary: Goal: Inform/Engage -> Presentation: A prominent "hero" section with a brand-aligned, friendly heading.
+        - Skills: Goal: Compare/Inform -> Viz: Interactive Radar Chart (Chart.js), restyled with the Starbucks green palette to show visual alignment.
+        - Experience: Goal: Organize/Inform -> Presentation: A clean, card-based horizontal tab system with clear button-like navigation.
+        - Education: Goal: Inform -> Presentation: A simple, elegant card to present academic credentials clearly.
+        Library/Method: Chart.js for visualization, Vanilla JS for interactions. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #f9f9f9; /* Creamy off-white */
+            color: #1e1e1e; /* Nearly black */
+        }
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Lora', serif;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 40vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container { height: 400px; }
+        }
+        .nav-link.active {
+            color: #00704A; /* Starbucks Green */
+            font-weight: 700;
+        }
+        .tab-active {
+            background-color: #00704A; /* Starbucks Green */
+            color: #ffffff;
+        }
+        .tab-inactive {
+            background-color: #e5e5e5;
+            color: #1e1e1e;
+        }
+        .content-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .content-section.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .job-content {
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(10px);
+        }
+        .job-content.active {
+             opacity: 1;
+             transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav id="main-nav" class="container mx-auto px-6 lg:px-8 py-3 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold font-heading text-gray-900 flex items-center">
+                <span class="text-3xl mr-2 text-[#00704A]">●</span> Jashanpreet Kaur
+            </a>
+            <div class="hidden md:flex items-center">
+                <ul class="flex items-center space-x-8">
+                    <li><a href="#summary" class="nav-link text-gray-700 hover:text-[#00704A] transition-colors">Summary</a></li>
+                    <li><a href="#skills" class="nav-link text-gray-700 hover:text-[#00704A] transition-colors">Skills</a></li>
+                    <li><a href="#experience" class="nav-link text-gray-700 hover:text-[#00704A] transition-colors">Experience</a></li>
+                    <li><a href="#education" class="nav-link text-gray-700 hover:text-[#00704A] transition-colors">Education</a></li>
+                </ul>
+                <a href="Resume_Jashanpreet.pdf" download="Jashanpreet_Kaur_Resume_Starbucks.pdf" class="ml-8 bg-[#00704A] text-white font-bold py-2 px-5 rounded-full hover:bg-[#006341] transition-colors duration-300">
+                    Download
+                </a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-600">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+             <a href="#summary" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-50">Summary</a>
+             <a href="#skills" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-50">Skills</a>
+             <a href="#experience" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-50">Experience</a>
+             <a href="#education" class="block py-2 px-6 text-sm text-gray-700 hover:bg-gray-50">Education</a>
+             <div class="p-4">
+                <a href="Resume_Jashanpreet.pdf" download="Jashanpreet_Kaur_Resume_Starbucks.pdf" class="block text-center w-full bg-[#00704A] text-white font-bold py-2 px-4 rounded-full hover:bg-[#006341] transition-colors duration-300">
+                    Download Resume
+                </a>
+             </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="summary" class="content-section bg-white pt-24 pb-20 text-center">
+            <div class="container mx-auto px-6 lg:px-8">
+                <h1 class="text-5xl md:text-6xl font-bold text-gray-900 leading-tight">A perfect blend of service & teamwork.</h1>
+                <p class="mt-6 max-w-2xl mx-auto text-lg text-gray-600">
+                    A personable and high-energy individual with a passion for creating genuine connections and delivering exceptional customer experiences. Excels in fast-paced, collaborative team settings and is a quick learner, eager to master the craft of preparing quality food and beverages. Looking to bring strong interpersonal skills, a focus on quality, and a positive attitude to the Barista role at Starbucks.
+                </p>
+            </div>
+        </section>
+
+        <section id="skills" class="content-section py-20">
+            <div class="container mx-auto px-6 lg:px-8 text-center">
+                <h2 class="text-4xl font-bold text-gray-900">Core Competencies</h2>
+                <p class="mt-4 max-w-2xl mx-auto text-gray-600">Here’s a look at my professional skills. Hover over the chart for more detail on how I can contribute to your team.</p>
+                <div class="mt-12 bg-white p-8 rounded-lg shadow-lg">
+                    <div class="chart-container">
+                        <canvas id="skillsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience" class="content-section bg-white py-20">
+            <div class="container mx-auto px-6 lg:px-8">
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold text-gray-900">Professional Experience</h2>
+                    <p class="mt-4 max-w-2xl mx-auto text-gray-600">Explore my previous roles by selecting a tab below.</p>
+                </div>
+                <div class="mt-12 max-w-4xl mx-auto">
+                    <div id="experience-tabs" class="flex justify-center space-x-2 md:space-x-4 p-1 bg-gray-200 rounded-full mb-8">
+                         <button data-job="store-associate" class="w-full py-2 px-4 font-semibold rounded-full transition-colors duration-300 tab-active">Store Associate</button>
+                         <button data-job="customer-support" class="w-full py-2 px-4 font-semibold rounded-full transition-colors duration-300 tab-inactive">Customer Support</button>
+                         <button data-job="volunteer" class="w-full py-2 px-4 font-semibold rounded-full transition-colors duration-300 tab-inactive">Volunteer</button>
+                    </div>
+                    <div class="relative min-h-[260px] bg-gray-50 p-8 rounded-lg">
+                        <div id="store-associate" class="job-content active">
+                            <h4 class="text-2xl font-bold text-gray-800">Store Associate</h4>
+                            <p class="text-md text-gray-500 mb-4">Fruticana | Surrey, BC | Feb 2025 – Present</p>
+                            <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                <li>Created a warm and welcoming store environment by greeting customers, discovering their needs, and providing excellent service.</li>
+                                <li>Handled cash transactions accurately and efficiently while maintaining store safety and security standards.</li>
+                                <li>Took pride in maintaining a clean, organized, and inviting workspace, including product displays and customer areas.</li>
+                                <li>Quickly learned the product inventory to make helpful recommendations to customers.</li>
+                            </ul>
+                        </div>
+                        <div id="customer-support" class="job-content absolute top-8 left-8 right-8 w-auto opacity-0 pointer-events-none">
+                             <h4 class="text-2xl font-bold text-gray-800">Customer Support Representative</h4>
+                             <p class="text-md text-gray-500 mb-4">Anywhere Anytime Ltd. | Delta, BC | Feb 2025 – Present</p>
+                             <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                 <li>Built positive relationships with customers through clear and pleasant communication via phone and live chat.</li>
+                                 <li>Acted as part of a team to ensure all customer inquiries were responded to promptly and effectively.</li>
+                             </ul>
+                        </div>
+                        <div id="volunteer" class="job-content absolute top-8 left-8 right-8 w-auto opacity-0 pointer-events-none">
+                             <h4 class="text-2xl font-bold text-gray-800">Volunteer, VOLT Program</h4>
+                             <p class="text-md text-gray-500 mb-4">Langara College | Vancouver, BC | Jan 2025 – Present</p>
+                             <ul class="list-disc list-inside space-y-2 text-gray-700">
+                                 <li>Collaborated effectively with a diverse team of student partners to plan and execute successful community events, demonstrating strong interpersonal skills.</li>
+                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="education" class="content-section py-20 text-center">
+                <div class="container mx-auto px-6 lg:px-8">
+                    <h2 class="text-4xl font-bold text-gray-900">Education</h2>
+                    <div class="mt-8 inline-block bg-white p-8 rounded-lg shadow-lg">
+                         <h4 class="text-2xl font-bold text-gray-800">Associate Degree in Computer Science</h4>
+                         <p class="text-md text-gray-500">Langara College | Vancouver, BC</p>
+                         <p class="text-md text-gray-500">January 2025 – Present</p>
+                    </div>
+                </div>
+            </section>
+    </main>
+    
+    <footer class="bg-[#1e1e1e] text-white">
+        <div class="container mx-auto py-6 px-6 lg:px-8 text-center text-sm">
+            <p>&copy; 2025 Jashanpreet Kaur | Inspired by my favorite coffee stop & designed for a new opportunity.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const skillsData = {
+                labels: ['People Person', 'Communication', 'Team Player', 'Quick Learner', 'Cash Handling', 'Adaptable'],
+                datasets: [{
+                    label: 'Proficiency',
+                    data: [95, 90, 92, 88, 85, 89],
+                    fill: true,
+                    backgroundColor: 'rgba(0, 112, 74, 0.2)',
+                    borderColor: 'rgb(0, 112, 74)',
+                    pointBackgroundColor: 'rgb(0, 112, 74)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(0, 112, 74)'
+                }]
+            };
+            const skillsChartCtx = document.getElementById('skillsChart').getContext('2d');
+            new Chart(skillsChartCtx, {
+                type: 'radar',
+                data: skillsData,
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { font: { size: 12, family: "'Lato', sans-serif", weight: '700' }, color: '#333' },
+                            ticks: { display: false, stepSize: 20, backdropColor: 'transparent' },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            const experienceTabs = document.getElementById('experience-tabs');
+            const jobContents = document.querySelectorAll('.job-content');
+            experienceTabs.addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button) {
+                    const targetJob = button.dataset.job;
+                    experienceTabs.querySelectorAll('button').forEach(btn => {
+                        btn.classList.remove('tab-active');
+                        btn.classList.add('tab-inactive');
+                    });
+                    button.classList.add('tab-active');
+                    button.classList.remove('tab-inactive');
+                    
+                    jobContents.forEach(content => {
+                        if (content.id === targetJob) {
+                            content.classList.remove('opacity-0', 'pointer-events-none', 'absolute', 'top-8', 'left-8', 'right-8', 'w-auto');
+                            content.classList.add('active');
+                        } else {
+                            content.classList.add('opacity-0', 'pointer-events-none', 'absolute', 'top-8', 'left-8', 'right-8', 'w-auto');
+                             content.classList.remove('active');
+                        }
+                    });
+                }
+            });
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.content-section').forEach(section => observer.observe(section));
+            
+            const mainNav = document.getElementById('main-nav');
+            const navLinks = mainNav.querySelectorAll('a[href^="#"]');
+            const navObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        navLinks.forEach(link => {
+                           if(link.getAttribute('href') === `#${id}`) {
+                               link.classList.add('active');
+                           } else {
+                               link.classList.remove('active');
+                           }
+                        });
+                    }
+                });
+            }, { rootMargin: '-40% 0px -60% 0px' });
+            document.querySelectorAll('main section').forEach(section => navObserver.observe(section));
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
